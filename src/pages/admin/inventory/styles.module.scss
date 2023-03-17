@@ -1,0 +1,135 @@
+.container {
+    background: var(--white);
+
+    
+    height: calc(100vh - 10rem);
+}
+
+.contentContainer {
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    h2 {
+        color: var(--gray-800)
+    }
+}
+
+.row {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: row;
+
+    gap: 12px;
+
+    button {
+        border: none;
+
+        background: var(--purple-500);
+        color: var(--white);
+        padding: 7px 22px;
+
+        border-radius: 3px;
+
+        &:hover {
+            filter: brightness(0.7);
+            transition: filter .2s;
+        }
+    }
+}
+
+.modalFormContent {
+    display: flex;
+    flex-direction: column;
+
+    input[type=text], input[type=numeric], select {
+        outline: 0;
+
+        border: none;
+        border: 1px solid var(--gray-300);
+        
+        padding: 12px;
+        border-radius: 5px;
+
+        & + input {
+            margin-top: 8px;
+        }
+    }
+
+    select {
+        margin-top: 8px;
+    }
+
+    div {
+        display: flex;;
+        flex-direction: row;
+        justify-content: stretch;
+        align-items: stretch;
+
+        gap: 12px;
+
+        margin: 8px 0;
+
+        button {
+            width: 100%;
+
+            border: 1px solid var(--gray-300);
+
+            background: var(--white);
+            color: var(--gray-800);
+
+            padding: 12px;
+            border-radius: 5px;
+
+            & + button {
+                background: var(--purple-500);
+                color: var(--white);
+            }
+
+            &:hover {
+                filter: brightness(0.7);
+                transition: filter .2s;
+            }
+        }
+    }
+}
+
+.tableContainer {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px;
+    border-radius: 5px;
+
+    th {
+        border-bottom: 1px solid #F5F5F5;
+        background: #FAFAFA;
+        color: #A3A3A3;
+        font-weight: 500;
+        height: 3rem;
+    }
+
+    td, th {
+        text-align: left;
+        padding: 8px;
+    }
+      
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+
+      tr {
+        td {
+            color: var(--gray-800);
+            font-size: 14px;
+            font-weight: 500;
+
+            height: 3rem;
+
+            & + td {
+                border-top: 1px solid #E8E8E8;
+            }
+        }
+      }
+  }

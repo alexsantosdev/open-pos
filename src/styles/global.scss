@@ -1,0 +1,67 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --white: #FFFFFF;
+
+    --gray-100: #e1e1e6;
+    --gray-300: #a8a8b3;
+    --gray-700: #303038;
+    --gray-750: #202024;
+    --gray-775: #222525;
+    --gray-800: #29292e;
+    --gray-850: #1b1e1e;
+    --gray-875: #1b1e1e;
+    --gray-850: #1f2729;
+    --gray-900: #121214;
+
+    --cyan-500: #61dafd;
+
+    --yellow-500: #eba417;
+
+    --purple-100: #B297F5;
+    --purple-450: #694BBB;
+    --purple-500: #5D3FB2;
+
+    --orange-500: #F57F31;
+
+    --green-500: #14A343;
+
+    --blue-500: #0B5AE2;
+    --blue-900: #00073D;
+
+    --red-500: #B2263D;
+}
+
+@media (max-width: 1080px) {
+    html {
+        font-size: 93.75%;
+    }
+}
+
+@media (max-width: 720px) {
+    html {
+        font-size: 87.5%;
+    }
+}
+
+body {
+    background: var(--gray-900);
+    color: var(--white);
+}
+
+body, input, textarea, select, button {
+    font: 400 1rem "Roboto", sans-serif;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none
+}
