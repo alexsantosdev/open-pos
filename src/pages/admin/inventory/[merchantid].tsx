@@ -3,20 +3,22 @@ import { getSession } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
-import { ref, get, child, update, set } from 'firebase/database'
+import { ref, get, child, update, set, remove } from 'firebase/database'
 import toast, { Toaster } from 'react-hot-toast'
+import { FiSearch } from 'react-icons/fi'
 
 import { Header } from '../../../components/Header'
 import { Navigator } from '../../../components/Navigator'
 import Modal from '../../../components/Modal'
+import { Table } from '../../../components/Table'
 
 import { database } from '../../../services/firebase'
 
 import { MerchantData } from '../../api/subscribe'
 
-import styles from './styles.module.scss'
-import { ProductTable } from '../../../components/ProductTable'
 import { dateMask, moneyMask } from '../../../utils/itemMask'
+
+import styles from './styles.module.scss'
 
 interface Categories {
     name: string;
@@ -63,8 +65,14 @@ export default function MerchantId({session}) {
     const [merchantData, setMerchantData] = useState<MerchantData>({} as MerchantData)
     const [isNewProductOpen, setIsNewProductOpen] = useState(false)
     const [isNewCategoryOpen, setIsNewCategoryOpen] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [selectedCode, setSelectedCode] = useState('')
+    const [filteredValue, setFilteredValue] = useState('')
 
-    const handleChangeProductModal = () => setIsNewProductOpen(!isNewProductOpen)
+    const handleChangeProductModal = () => {
+        handleClearData()
+        setIsNewProductOpen(!isNewProductOpen)
+    }
     const handleChangeCategoryModal = () => setIsNewCategoryOpen(!isNewCategoryOpen)
 
     const [code, setCode] = useState('')
@@ -88,6 +96,107 @@ export default function MerchantId({session}) {
         setSale(String(calc).replace('.', ','))
         setMargin(value)
         return value
+    }
+
+    const filteredProducts = firebaseProduct.filter(p => p.description.includes(filteredValue))
+
+    const handleClearData = () => {
+        setCategory('')
+        setCode('')
+        setDescription('')
+        setInventory('')
+        setValidity('')
+        setCost('')
+        setMargin('')
+        setSale('')
+        setProductCategory('')
+    }
+
+    const handleOpenEditOptions = async (c: string) => {
+        setIsEditing(true)
+        setIsNewProductOpen(!isNewProductOpen)
+
+        const dbRef = ref(database)
+        await get(child(dbRef, `merchant/${session.merchant_id}/products/${c}`)).then((snapshot) => {
+            if(snapshot.exists()) {
+                const data: ProductType = snapshot.val() ?? {}
+                console.log(data)
+
+                setCode(data.code)
+                setDescription(data.description)
+                setInventory(data.inventory)
+                setValidity(data.validity)
+                setCost(data.cost)
+                setMargin(data.margin)
+                setSale(data.salePrice)
+                setProductCategory(data.category)
+            }
+        })
+
+        setSelectedCode(c)
+    }
+
+    const handleEditItem = async (c: string) => {
+        console.log('Entrou aqui', productCategory)
+        toast.promise(
+            update(ref(database, `merchant/${session?.merchant_id}/products/${c}`), {
+                code,
+                description,
+                inventory,
+                validity,
+                cost,
+                margin,
+                sale,
+                category: productCategory
+            }),
+            {
+                loading: 'Estamos Salvando as alterações...',
+                success: <b>Alterações salvas!</b>,
+                error: <b>Hmm! Ocorreu um erro, tente novamente.</b>,
+            },
+            {
+                style: {
+                    border: '1px solid var(--purple-500)',
+                    padding: '16px',
+                    color: '#5D3FB2',
+                    background: '#f6f6f6'
+                },
+                iconTheme: {
+                    primary: '#5D3FB2',
+                    secondary: '#FFFFFF',
+                },
+            }
+        )
+
+        handleClearData()
+        setIsEditing(false)
+        handleGetMerchantCategories(session?.merchant_id)
+        handleGetMerchantProducts(session?.merchant_id)
+    }
+
+    const handleDeleteItem = async (code: string) => {
+        toast.promise(
+            remove(ref(database, `merchant/${session?.merchant_id}/products/${code}`)),
+            {
+                loading: 'Estamos removendo seu produto...',
+                success: <b>Produto removido!</b>,
+                error: <b>Hmm! Ocorreu um erro, tente novamente.</b>,
+            },
+            {
+                style: {
+                    border: '1px solid var(--purple-500)',
+                    padding: '16px',
+                    color: '#5D3FB2',
+                    background: '#f6f6f6'
+                },
+                iconTheme: {
+                    primary: '#5D3FB2',
+                    secondary: '#FFFFFF',
+                },
+            }
+        )
+
+        handleGetMerchantProducts(session?.merchant_id)
     }
 
     const handleCreateCategory = async () => {
@@ -371,7 +480,7 @@ export default function MerchantId({session}) {
 
             <Toaster position="bottom-right" reverseOrder={false} />
 
-            <Modal show={isNewProductOpen} headerTitle='Novo produto'>
+            <Modal show={isNewProductOpen} headerTitle={isEditing ? 'Editar produto' : 'Novo produto'}>
                 <div className={styles.modalFormContent}>
                     <input type='text' placeholder='Código do produto' value={code} onChange={e => setCode(e.target.value)} />
                     <input type='text' placeholder='Descrição do produto' value={description} onChange={e => setDescription(e.target.value)} />
@@ -380,7 +489,7 @@ export default function MerchantId({session}) {
                     <input type='numeric' placeholder='Custo por unidade' value={cost ? 'R$ ' + cost : ''} onChange={e => setCost(moneyMask(e.target.value))} />
                     <input type='numeric' placeholder='Margem de lucro em %' value={margin} onChange={e => setMargin(saleMask(e.target.value))} />
                     <input type='numeric' placeholder='Preço de venda' value={sale ? 'R$ ' + sale : ''} disabled />
-                    <select onChange={e => setProductCategory(e.target.value)}>
+                    <select value={productCategory} onChange={e => setProductCategory(e.target.value)}>
                         <option value='' hidden>Categoria</option>
                         {
                             firebaseCategory.map(category => {
@@ -392,7 +501,8 @@ export default function MerchantId({session}) {
                     </select>
                     <div>
                         <button onClick={handleChangeProductModal}>Cancelar</button>
-                        <button onClick={handleCreateProduct}>Salvar</button>
+                        <button onClick={handleClearData}>Limpar</button>
+                        <button onClick={() => isEditing ? handleEditItem(selectedCode) : handleCreateProduct()}>Salvar</button>
                     </div>
                 </div>
             </Modal>
@@ -402,6 +512,7 @@ export default function MerchantId({session}) {
                     <input type='text' placeholder='Nome da categoria' value={category} onChange={e => setCategory(e.target.value)} />
                     <div>
                         <button onClick={handleChangeCategoryModal}>Cancelar</button>
+                    <button onClick={handleClearData}>Limpar</button>
                         <button onClick={handleCreateCategory}>Salvar</button>
                     </div>
                 </div>
@@ -411,8 +522,17 @@ export default function MerchantId({session}) {
                 <div className={styles.contentContainer}>
                     <h2>Controle de estoque</h2>
                     <div className={styles.row}>
-                        <button onClick={handleChangeProductModal}>+ Produto</button>
-                        <button onClick={handleChangeCategoryModal}>+ Categoria</button>
+                        <div>
+                            <button onClick={handleChangeProductModal}>+ Produto</button>
+                            <button onClick={handleChangeCategoryModal}>+ Categoria</button>  
+                        </div>
+                        <div>
+                            <div className={styles.searchBox}>
+                                <FiSearch color='#A1A1A1' />
+                                <input type='text' value={filteredValue} onChange={e => setFilteredValue(e.target.value)} placeholder='Descrição do produto' />
+                            </div>
+                            <span>{firebaseProduct.length} Produtos cadastrados.</span>
+                        </div>
                     </div>
                     <div className={styles.tableContainer}>
                         {/* <ProductTable
@@ -426,7 +546,7 @@ export default function MerchantId({session}) {
                             responsive
                             subHeaderWrap
                         /> */}
-                        <table className={styles.tableContainer}>
+                        {/* <table className={styles.tableContainer}>
                             <thead>
                                 <tr>
                                     <th>Código</th>
@@ -438,6 +558,7 @@ export default function MerchantId({session}) {
                                     <th>Margem</th>
                                     <th>Status</th>
                                     <th>Categoria</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -449,17 +570,26 @@ export default function MerchantId({session}) {
                                                 <td>{p.description}</td>
                                                 <td>{p.inventory}</td>
                                                 <td>{p.validity}</td>
-                                                <td>R$ {p.cost}</td>
-                                                <td>R$ {p.salePrice}</td>
+                                                <td>$ {p.cost}</td>
+                                                <td>$ {p.salePrice}</td>
                                                 <td>{p.margin}%</td>
-                                                <td>{Number(p.inventory) < 10 ? 'Abastecer' : 'OK'}</td>
+                                                <td>
+                                                    <Status alert={Number(p.inventory) < 10} text={Number(p.inventory) < 10 ? 'Abastecer' : 'OK'} />
+                                                </td>
                                                 <td>{p.category}</td>
+                                                <td>
+                                                    <div className={styles.actionsRow}>
+                                                        <button></button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         )
                                     })
                                 }
                             </tbody>
-                        </table>
+                        </table> */}
+
+                        <Table data={filteredValue.length > 0 ? filteredProducts : firebaseProduct} rowsPerPage={6} handleDeleteItem={handleDeleteItem} handleEditItem={handleOpenEditOptions} />
                     </div>
                 </div>
             </main>
