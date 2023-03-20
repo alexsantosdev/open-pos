@@ -1,0 +1,181 @@
+.container {
+    background: var(--white);
+
+    height: calc(100vh - 10rem);
+}
+
+.contentContainer {
+    max-width: 1152px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    h2 {
+        color: var(--gray-800);
+        margin-bottom: 2rem;
+    }
+
+    h3 {
+        color: var(--gray-800);
+        margin: 2rem 0;
+    }
+}
+
+.saleContainer {
+    display: flex;
+    flex-direction: column;
+
+    width: 400px;
+
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+.searchBox {
+    display: flex;
+    flex-direction: row;
+
+    gap: 8px;
+
+    border: 1px solid #B9B9B9;
+    padding: 7px 12px;
+    border-radius: 5px;
+
+    width: 100%;
+
+    input[type=text] {
+        outline: 0;
+        border: none;
+        width: 100%;
+
+        background: none;
+    }
+}
+
+.quantityBox {
+    width: 100%;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: stretch;
+
+    gap: 8px;
+
+    button {
+        border: none;
+        background: var(--purple-500);
+        color: var(--white);
+
+        height: 40px;
+        width: 100px;
+
+        border-radius: 5px;
+    }
+
+    input[type=number] {
+        height: 40px;
+        width: 100%;
+        
+        border: none;
+
+        border: 1px solid var(--gray-300);
+        border-radius: 5px;
+
+        text-align: center;
+        outline: 0;
+    }
+}
+
+.addButton {
+    border: none;
+    background: var(--purple-500);
+    color: var(--white);
+    margin-top: 1rem;
+
+    padding: 12px;
+    border-radius: 5px;
+}
+
+.selectable {
+    border: none;
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    margin-top: 8px;
+
+    padding: 12px;
+    border-radius: 3px;
+
+    &:hover {
+        filter: brightness(0.9);
+        transition: filter .2s;
+    }
+
+    &.active {
+        border: 2px solid var(--purple-500);
+    }
+}
+
+.saleTable {
+    border-collapse: collapse;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.tableRowHeader {
+    background-color: transparent;
+    transition: all 0.25s ease;
+    border-radius: 10px;
+}
+  
+.tableHeader {
+    background-color: #f1f1f1;
+    padding: 12px;
+    font-weight: 500;
+    text-align: left;
+    font-size: 14px;
+    color: #2c3e50;
+}
+  
+.tableHeader:first-child {
+    border-top-left-radius: 15px;
+}
+  
+.tableHeader:last-child {
+    border-top-right-radius: 15px;
+}
+
+.tableRowItems:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+  
+.tableCell {
+    padding: 12px;
+    font-size: 14px;
+    color: grey;
+}
+
+.removeSale {
+    background: none;
+    border: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        filter: brightness(0.7);
+        transition: filter .2s;
+    }
+}
+
+.submitSale {
+    border: none;
+    background: var(--purple-500);
+    color: var(--white);
+    margin-top: 1rem;
+
+    padding: 12px;
+    border-radius: 5px;
+}

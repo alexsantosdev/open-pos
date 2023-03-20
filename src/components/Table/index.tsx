@@ -10,8 +10,8 @@ import styles from './styles.module.scss'
 interface TableProps {
     data: any[],
     rowsPerPage: number,
-    handleDeleteItem: (code: string) => void,
-    handleEditItem: (code: string) => void,
+    handleDeleteItem?: (code: string) => void,
+    handleEditItem?: (code: string) => void,
 }
 
 interface TableFooterProps {
