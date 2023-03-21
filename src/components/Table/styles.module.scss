@@ -100,3 +100,24 @@
     color: #2c3e50;
     background: #f9f9f9;
 }
+
+@media (max-width: 720px) {
+  .tableContainer {
+    width: 100%;
+    overflow-x: scroll;
+
+    .table {
+      .tableRowHeader {
+        white-space: nowrap;
+      }
+
+      .tableRowItems {
+        white-space: nowrap;
+      }
+    }
+
+    .tableFooter {
+      width: 100%;
+    }
+  }
+}

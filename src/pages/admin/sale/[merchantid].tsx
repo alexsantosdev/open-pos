@@ -251,34 +251,37 @@ export default function MerchantId({ session }) {
                         <button onClick={handleAddSale} className={styles.addButton}>Adicionar</button>
                     </div>
                     <h3>Venda</h3>
-                    <table className={styles.saleTable}>
-                        <thead className={styles.tableRowHeader}>
-                            <tr>
-                                <th className={styles.tableHeader}>Código</th>
-                                <th className={styles.tableHeader}>Descrição</th>
-                                <th className={styles.tableHeader}>Quantidade</th>
-                                <th className={styles.tableHeader}>Preço de venda</th>
-                                <th className={styles.tableHeader}>Total</th>
-                                <th className={styles.tableHeader}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            todaySale.map((s, index) => {
-                                return(
-                                    <tr key={index} className={styles.tableRowItems}>
-                                        <td className={styles.tableCell}>{s.code}</td>
-                                        <td className={styles.tableCell}>{s.description}</td>
-                                        <td className={styles.tableCell}>{s.quantity}</td>
-                                        <td className={styles.tableCell}>$ {s.salePrice}</td>
-                                        <td className={styles.tableCell}>$ {String(Number(s.quantity) * Number(s.salePrice.replace(',', '.'))).replace('.', ',')}</td>
-                                        <td className={styles.tableCell}><button className={styles.removeSale} onClick={() => removeItemOnce(todaySale, s)}><FiTrash color='#A1A1A1' /></button></td>
-                                    </tr>
-                                )
-                            })
-                        }
-                        </tbody>
-                    </table>
+                    <div className={styles.tableContainer}>
+                        <table className={styles.saleTable}>
+                            <thead className={styles.tableRowHeader}>
+                                <tr>
+                                    <th className={styles.tableHeader}>Código</th>
+                                    <th className={styles.tableHeader}>Descrição</th>
+                                    <th className={styles.tableHeader}>Quantidade</th>
+                                    <th className={styles.tableHeader}>Preço de venda</th>
+                                    <th className={styles.tableHeader}>Total</th>
+                                    <th className={styles.tableHeader}></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                todaySale.map((s, index) => {
+                                    return(
+                                        <tr key={index} className={styles.tableRowItems}>
+                                            <td className={styles.tableCell}>{s.code}</td>
+                                            <td className={styles.tableCell}>{s.description}</td>
+                                            <td className={styles.tableCell}>{s.quantity}</td>
+                                            <td className={styles.tableCell}>$ {s.salePrice}</td>
+                                            <td className={styles.tableCell}>$ {String(Number(s.quantity) * Number(s.salePrice.replace(',', '.'))).replace('.', ',')}</td>
+                                            <td className={styles.tableCell}><button className={styles.removeSale} onClick={() => removeItemOnce(todaySale, s)}><FiTrash color='#A1A1A1' /></button></td>
+                                        </tr>
+                                    )
+                                })
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                    
                     <h3>Total</h3>
                     <h2>R$ {String(totalSale).replace('.', ',')}</h2>
                     <button className={styles.submitSale} onClick={handleCreateSale}>Fechar venda</button>

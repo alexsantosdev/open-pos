@@ -52,3 +52,15 @@
     height: 3rem;
     margin: 0 1rem;
 }
+
+@media (max-width: 720px) {
+    .navigatorContainer {
+        .navigatorContent {
+            nav {
+                width: 100%;
+
+                justify-content: space-between;
+            }
+        }
+    }
+}

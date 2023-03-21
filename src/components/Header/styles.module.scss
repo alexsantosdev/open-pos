@@ -63,3 +63,15 @@
         margin-left: auto;
     }
 }
+
+@media (max-width: 720px) {
+    .headerContainer {
+        .headerContent {
+            nav {
+                span {
+                    display: none;
+                }
+            }
+        }
+    }
+}

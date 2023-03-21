@@ -26,7 +26,7 @@ export function Table({data, rowsPerPage, handleDeleteItem, handleEditItem }: Ta
     const { slice, range } = useTable(data, page, rowsPerPage)
 
     return(
-        <>
+        <div className={styles.tableContainer}>
             <table className={styles.table}>
                 <thead className={styles.tableRowHeader}>
                     <tr>
@@ -69,7 +69,7 @@ export function Table({data, rowsPerPage, handleDeleteItem, handleEditItem }: Ta
                 </tbody>
             </table>
             <TableFooter range={range} slice={slice} setPage={setPage} page={page} />
-        </>
+        </div>
     )
 }
 
