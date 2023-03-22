@@ -455,6 +455,8 @@ export default function MerchantId({session}) {
                 })
 
                 setFirebaseProduct(parsedData)
+            }else {
+                setFirebaseProduct([])
             }
          })
     }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { child, get, push, ref, update } from 'firebase/database'
+import { child, get, push, ref, set, update } from 'firebase/database'
 import { getSession } from 'next-auth/react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
@@ -154,10 +154,11 @@ export default function MerchantId({ session }) {
                 inventory: Number(s.inventory) - Number(s.quantity)
             })
 
-            await push(ref(database, `merchant/${session?.merchant_id}/sales/`), {
+            await set(ref(database, `merchant/${session?.merchant_id}/sales/` + new Date().toJSON().toString().replace('.', '')), {
                 name: s.description,
                 quantity: s.quantity,
-                date: new Date()
+                total: (Number(s.salePrice.replace(',', '.')) * Number(s.quantity)).toString(),
+                date: new Date().toJSON().toString()
             })
         })
 
