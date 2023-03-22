@@ -48,6 +48,8 @@ export default function MerchantId() {
         }
 
         setTotalSale(sum)
+
+        return totalSale
     }
 
     const handleGetTodaySales = async (merchant_id: string | unknown) => {
@@ -73,8 +75,10 @@ export default function MerchantId() {
                 let todaySale: SaleType[] = parsedData.filter(d => d.id.includes(todayDateToString))
 
                 setTodaySales(todaySale)
+                handleGetGrossVolume()
             }else {
                 setTodaySales([])
+                handleGetGrossVolume()
             }
          })
     }
@@ -125,6 +129,10 @@ export default function MerchantId() {
         handleGetTodaySales(session?.merchant_id)
         handleGetGrossVolume()
     }, [session])
+
+    useEffect(() => {
+        handleGetGrossVolume()
+    }, [todaySales])
 
     return (
         <>
