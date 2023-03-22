@@ -24,19 +24,6 @@ interface Categories {
     name: string;
 }
 
-interface FirebaseProducts {
-    id: {
-        code: string;
-        description: string;
-        inventory: string;
-        validity: string;
-        cost: string;
-        margin: string;
-        salePrice: string;
-        category: string;
-    }
-}
-
 interface Products {
     code: string;
     description: string;
@@ -367,47 +354,67 @@ export default function MerchantId({session}) {
 
         let productId: string = code.trim().toLowerCase()
 
-        toast.promise(
-            set(ref(database, `merchant/${session?.merchant_id}/products/` + productId), {
-                code: code,
-                description: description,
-                inventory: inventory,
-                validity: validity,
-                cost: cost,
-                margin: margin,
-                salePrice: sale,
-                category: productCategory
-            }),
-            {
-                loading: 'Estamos criando seu produto...',
-                success: <b>Produto criado!</b>,
-                error: <b>Hmm! Ocorreu um erro, tente novamente.</b>,
-            },
-            {
-                style: {
-                    border: '1px solid var(--purple-500)',
-                    padding: '16px',
-                    color: '#5D3FB2',
-                    background: '#f6f6f6'
-                },
-                iconTheme: {
-                    primary: '#5D3FB2',
-                    secondary: '#FFFFFF',
-                },
+        let productIdExists: boolean = false
+
+        await get(child(ref(database), `merchant/${session?.merchant_id}/products/` + productId)).then((snapshot) => {
+            if(snapshot.exists()) {
+                productIdExists = true
+                return toast.error('Já existe um produto com esse código.', {
+                    style: {
+                        border: '1px solid var(--purple-500)',
+                        padding: '16px',
+                        color: '#5D3FB2',
+                        background: '#f6f6f6'
+                    },
+                    iconTheme: {
+                        primary: '#5D3FB2',
+                        secondary: '#FFFFFF',
+                    },
+                })
             }
-        )
+        })
 
-        handleGetMerchantProducts(session?.merchant_id)
-        setCode('')
-        setDescription('')
-        setInventory('')
-        setValidity('')
-        setCost('')
-        setMargin('')
-        setSale('')
-        setProductCategory('')
+        if(!productIdExists) {
+            toast.promise(
+                set(ref(database, `merchant/${session?.merchant_id}/products/` + productId), {
+                    code: code,
+                    description: description,
+                    inventory: inventory,
+                    validity: validity,
+                    cost: cost,
+                    margin: margin,
+                    salePrice: sale,
+                    category: productCategory
+                }),
+                {
+                    loading: 'Estamos criando seu produto...',
+                    success: <b>Produto criado!</b>,
+                    error: <b>Hmm! Ocorreu um erro, tente novamente.</b>,
+                },
+                {
+                    style: {
+                        border: '1px solid var(--purple-500)',
+                        padding: '16px',
+                        color: '#5D3FB2',
+                        background: '#f6f6f6'
+                    },
+                    iconTheme: {
+                        primary: '#5D3FB2',
+                        secondary: '#FFFFFF',
+                    },
+                }
+            )
 
-
+            handleGetMerchantProducts(session?.merchant_id)
+            setCode('')
+            setDescription('')
+            setInventory('')
+            setValidity('')
+            setCost('')
+            setMargin('')
+            setSale('')
+            setProductCategory('')
+        }
     }
 
     const handleGetMerchantData = async (merchant_id: string | unknown) => {

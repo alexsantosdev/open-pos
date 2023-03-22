@@ -14,3 +14,36 @@
         color: var(--gray-800)
     }
 }
+
+.box {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: space-around;
+
+    padding: 12px;
+
+    margin: 2rem 0;
+
+    border: 1px solid var(--gray-300);
+    border-radius: 5px;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        
+        justify-content: center;
+
+        gap: 8px;
+
+        span {
+            color: #545969;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 26px;
+        }
+    }
+}

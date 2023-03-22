@@ -20,14 +20,37 @@ interface SaleType {
     date: string
 }
 
+interface ProductType {
+    code: string;
+    description: string;
+    inventory: string;
+    validity: string;
+    cost: string;
+    margin: string;
+    salePrice: string;
+    category: string;
+}
+
 export default function MerchantId() {
     const { data: session } = useSession()
     const router = useRouter()
 
     const [merchantData, setMerchantData] = useState<MerchantData>({} as MerchantData)
+    const [firebaseProduct, setFirebaseProduct] = useState<ProductType[]>([])
     const [todaySales, setTodaySales] = useState<SaleType[]>([])
+    const [totalSale, setTotalSale] = useState(0)
 
-    const handleGetTodaySale = async (merchant_id: string | unknown) => {
+    const handleGetGrossVolume = () => {
+        var sum = 0
+
+        for(var i = 0; i < todaySales.length; i++) {
+            sum += Number(todaySales[i].total)
+        }
+
+        setTotalSale(sum)
+    }
+
+    const handleGetTodaySales = async (merchant_id: string | unknown) => {
         const dbRef = ref(database)
         await get(child(dbRef, `merchant/${merchant_id}/sales`)).then((snapshot) => {
             if(snapshot.exists()) {
@@ -50,7 +73,6 @@ export default function MerchantId() {
                 let todaySale: SaleType[] = parsedData.filter(d => d.id.includes(todayDateToString))
 
                 setTodaySales(todaySale)
-                console.log('Today sale >>', todaySales)
             }else {
                 setTodaySales([])
             }
@@ -66,14 +88,42 @@ export default function MerchantId() {
             }
         })
     }
+
+    const handleGetMerchantProducts = async (merchant_id: string | unknown) => {
+        const dbRef = ref(database)
+        await get(child(dbRef, `merchant/${merchant_id}/products`)).then((snapshot) => {
+            if(snapshot.exists()) {
+                const data: ProductType[] = snapshot.val() ?? {}
+                const parsedData = Object.entries(data).map(([key, value]) => {
+                    return {
+                        code: value.code,
+                        description: value.description,
+                        inventory: value.inventory,
+                        validity: value.validity,
+                        cost: value.cost,
+                        margin: value.margin,
+                        salePrice: value.salePrice,
+                        category: value.category
+                    }
+                })
+
+                setFirebaseProduct(parsedData)
+            }else {
+                setFirebaseProduct([])
+            }
+         })
+    }
     
     useEffect(() => {
         if(!session) {
             router.push('/')
             return
         }
+
         handleGetMerchantData(session?.merchant_id)
-        handleGetTodaySale(session?.merchant_id)
+        handleGetMerchantProducts(session?.merchant_id)
+        handleGetTodaySales(session?.merchant_id)
+        handleGetGrossVolume()
     }, [session])
 
     return (
@@ -91,16 +141,18 @@ export default function MerchantId() {
                     <div className={styles.box}>
                         <div>
                             <span>Volume bruto</span>
-                            <h2>R$ </h2>
+                            <h2>R$ {Math.floor(totalSale).toString().replace('.', ',')}</h2>
                         </div>
                         <div>
                             <span>Vendas</span>
-                            <h2></h2>
+                            <h2>{todaySales.length}</h2>
                         </div>
                         <div>
                             <span>Estoque</span>
+                            <h2>{firebaseProduct.length}</h2>
                         </div>
                     </div>
+                    <h2>Ultimas transações</h2>
                 </div>
             </main>
         </>
