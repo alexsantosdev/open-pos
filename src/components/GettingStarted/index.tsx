@@ -6,7 +6,6 @@ import { child, ref, update, get } from 'firebase/database'
 import toast, { Toaster } from 'react-hot-toast'
 
 import { database } from '../../services/firebase'
-import { api } from '../../services/api'
 
 import styles from './styles.module.scss'
 import { useRouter } from 'next/router'
@@ -103,8 +102,6 @@ export function GettingStarted({ session }: GettingStartedProps) {
                       },
                  }
             );
-            
-            console.log('Está passando por aqui!')
             
             //TODO: Criar subscrição na plataforma
             // await api.post('/subscribe')

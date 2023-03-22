@@ -43,18 +43,6 @@ export default NextAuth({
     async signIn({ user, account, profile, email, credentials }) {
 
       try{
-
-        // Math.floor( product_price * account_fee);
-        const merchantRef = await get(ref(database, `merchant/${user.id}`))
-
-        if(!merchantRef.exists()) {
-          await set(ref(database, `merchant/${user.id}`), {
-            email: user.email,
-            account_fee: 0.039,
-            subscription: false
-          })
-        }
-
         const dynamicId = Math.random().toString(36).substr(2, 9)
 
         const ownerReference = await get(ref(database, `owner/${user.id}`))
@@ -65,7 +53,7 @@ export default NextAuth({
               author_id: user.id,
               email: user.email,
             },
-            account_fee: 0.039,
+            active_subscription: false,
             subscription: false,
             merchant_id: dynamicId
           })
