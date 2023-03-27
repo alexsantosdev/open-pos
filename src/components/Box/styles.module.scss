@@ -1,0 +1,41 @@
+.boxContainer {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 12px;
+    background: var(--white);
+}
+
+.boxHeader {
+    padding: 22px;
+
+    display: flex;
+    flex-direction: row;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    span {
+        font-weight: 500;
+        font-size: 1.25rem;
+        color: #050631;
+    }
+}
+
+.boxBody {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    padding: 0 22px;
+
+    margin-bottom: 2rem;
+}

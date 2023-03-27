@@ -1,5 +1,5 @@
 .container {
-    background: var(--white);
+    background: var(--white-100);
 
     
     height: calc(100vh - 10rem);
@@ -13,6 +13,54 @@
     h2 {
         color: var(--gray-800)
     }
+}
+
+.boxContent {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: space-between;
+}
+
+.boxItem {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    > div {
+        display: flex;
+        flex-direction: row;
+
+        align-items: center;
+
+        gap: 12px;
+
+        span {
+            color: #727E8A;
+        }
+
+        &:last-child {
+            flex-direction: column;
+            gap: 0;
+            align-items: flex-start;
+
+            h3 {
+                font-size: 22px;
+                font-weight: 700;
+            }
+
+            span {
+                font-size: 12px;
+            }
+        }
+    }
+}
+
+.verticalLine {
+    border-left: 1px solid #A7A7A7;
+    height: 4rem;
 }
 
 .box {

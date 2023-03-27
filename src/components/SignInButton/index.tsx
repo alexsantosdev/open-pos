@@ -15,7 +15,7 @@ export function SignInButton() {
             onClick={() => signOut()}
         >
             <FiX color="#737380" className={styles.closeIcon} />
-            {session.user.name}
+            {/* {session.user.name} */} Sair
         </button>
     ) : (
         <button

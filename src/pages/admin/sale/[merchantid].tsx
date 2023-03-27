@@ -5,16 +5,20 @@ import { getSession } from 'next-auth/react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import toast, { Toaster, ToasterProps } from 'react-hot-toast'
-import { FiSearch, FiTrash } from 'react-icons/fi'
+import { FiCreditCard, FiDollarSign, FiSearch, FiTrash } from 'react-icons/fi'
 
 import { Header } from '../../../components/Header'
 import { Navigator } from '../../../components/Navigator'
+import Box from '../../../components/Box'
 
 import { database } from '../../../services/firebase'
+
+import { moneyMask } from '../../../utils/itemMask'
 
 import { MerchantData } from '../../api/subscribe'
 
 import styles from './styles.module.scss'
+import SaleItem from '../../../components/SaleItem'
 
 interface Products {
     code: string;
@@ -40,6 +44,16 @@ interface Sale {
     date: Date
 }
 
+interface SaleType {
+    id: string,
+    name: string,
+    quantity: string,
+    total: string,
+    date: string,
+    paymentMethod: string,
+    change: number
+}
+
 export default function MerchantId({ session }) {
     const router = useRouter()
 
@@ -50,9 +64,18 @@ export default function MerchantId({ session }) {
     const [selectedProduct, setSelectedProduct] = useState<Products>({} as Products)
     const [productCode, setProductCode] = useState('')
     const [todaySale, setTodaySale] = useState<Sale[]>([])
+    const [todaySales, setTodaySales] = useState<SaleType[]>([])
     const [totalSale, setTotalSale] = useState(0)
+    const [selectedMethod, setSelectedMethod] = useState('')
+    const [cashAmount, setCashAmount] = useState('')
 
-    const increaseQuantity = () => setQuantity(quantity + 1)
+    const increaseQuantity = () => {
+        if(selectedProduct !== null) {
+            (quantity < Number(selectedProduct.inventory)) && setQuantity(quantity + 1)
+        }else {
+            setQuantity(quantity + 1)
+        }
+    }
     const decreaseQuantity = () => (quantity !== 0) && setQuantity(quantity - 1)
 
     const handleSelectProduct = (code: string) => {
@@ -76,7 +99,7 @@ export default function MerchantId({ session }) {
         setTotalSale(sum)
     }
 
-    const filteredProducts = firebaseProduct.filter(p => p.description.includes(filteredValue))
+    const filteredProducts = firebaseProduct.filter(p => p.description.toLowerCase().includes(filteredValue.toLowerCase()))
         .map(p => {
             return(
                 <>
@@ -84,6 +107,20 @@ export default function MerchantId({ session }) {
                 </>
             )
         })
+
+    const handleSelectPaymentMethod = (method: string) => {
+        switch(method) {
+            case 'credit':
+                setSelectedMethod('credit')
+                break
+            case 'debit':
+                setSelectedMethod('debit')
+                break
+            case 'cash':
+                setSelectedMethod('cash')
+                break
+        }
+    }
 
     const handleAddSale = () => {
         let sale = {
@@ -100,16 +137,16 @@ export default function MerchantId({ session }) {
         }
 
         if(filteredValue.length <= 0 || filteredProducts.length <= 0) {
-            return toast.error('Informe um produto para venda', {
+            return toast.error('Selecione um produto antes.', {
                 style: {
-                  border: '1px solid var(--purple-500)',
+                  border: '1px solid #AF9C6A',
                   padding: '16px',
-                  color: '#5D3FB2',
-                  background: '#f6f6f6'
+                  color: '#BB9D58',
+                  background: '#FFFBEC'
                 },
                 iconTheme: {
-                  primary: '#5D3FB2',
-                  secondary: '#FFFFFF',
+                  primary: '#FDEFC8',
+                  secondary: '#BB9D58',
                 },
             })
         }
@@ -149,6 +186,21 @@ export default function MerchantId({ session }) {
     }
 
     const handleCreateSale = async () => {
+        if(todaySale.length === 0) {
+            return toast.error('Crie pelo menos uma venda', {
+                style: {
+                  border: '1px solid #713133',
+                  padding: '16px',
+                  color: '#842B2C',
+                  background: '#FFEEED'
+                },
+                iconTheme: {
+                  primary: '#FBCDCE',
+                  secondary: '#842B2C',
+                },
+            })
+        }
+
         todaySale.map(async s => {
             await update(ref(database, `merchant/${session?.merchant_id}/products/${s.code}`), {
                 inventory: Number(s.inventory) - Number(s.quantity)
@@ -158,11 +210,17 @@ export default function MerchantId({ session }) {
                 name: s.description,
                 quantity: s.quantity,
                 total: (Number(s.salePrice.replace(',', '.')) * Number(s.quantity)).toString(),
-                date: new Date().toJSON().toString()
+                date: new Date().toJSON().toString(),
+                paymentMethod: selectedMethod,
+                change: (Number(cashAmount.replace('.', '').replace(',', '.'))) - (Number(s.salePrice.replace('.', '').replace(',', '.')) * Number(s.quantity))
             })
         })
 
         setTodaySale([])
+        setSelectedMethod('')
+        setCashAmount('')
+
+        handleGetTodaySales(session?.merchant_id)
 
         return toast.success('Venda cadastrada com sucesso!', {
             style: {
@@ -176,6 +234,37 @@ export default function MerchantId({ session }) {
                 secondary: '#FFFFFF',
             },
         })
+    }
+
+    const handleGetTodaySales = async (merchant_id: string | unknown) => {
+        const dbRef = ref(database)
+        await get(child(dbRef, `merchant/${merchant_id}/sales`)).then((snapshot) => {
+            if(snapshot.exists()) {
+                const data: SaleType[] = snapshot.val() ?? {}
+                const parsedData = Object.entries(data).map(([key, value]) => {
+                    return {
+                        id: key,
+                        name: value.name,
+                        quantity: value.quantity,
+                        total: value.total,
+                        date: value.date,
+                        paymentMethod: value.paymentMethod,
+                        change: value.change
+                    }
+                })
+
+                let todayDate = new Date()
+                const offset = todayDate.getTimezoneOffset()
+                todayDate = new Date(todayDate.getTime() - (offset*60*1000))
+                let todayDateToString = todayDate.toISOString().split('T')[0].toString()
+
+                let todaySale: SaleType[] = parsedData.filter(d => d.id.includes(todayDateToString))
+
+                setTodaySales(todaySale.reverse())
+            }else {
+                setTodaySales([])
+            }
+         })
     }
 
     const handleGetMerchantData = async (merchant_id: string | unknown) => {
@@ -218,6 +307,7 @@ export default function MerchantId({ session }) {
         }
         handleGetMerchantData(session?.merchant_id)
         handleGetMerchantProducts(session?.merchant_id)
+        handleGetTodaySales(session?.merchant_id)
     }, [session])
 
     useEffect(() => {
@@ -237,55 +327,98 @@ export default function MerchantId({ session }) {
 
             <main className={styles.container}>
                 <div className={styles.contentContainer}>
-                    <h2>Registrar venda</h2>
-                    <div className={styles.saleContainer}>
-                        <div className={styles.searchBox}>
-                            <FiSearch color='#A1A1A1' />
-                            <input type='text' value={filteredValue} onChange={e => setFilteredValue(e.target.value)} placeholder='Descrição do produto' />
-                        </div>
-                        {filteredValue.length > 2 && filteredProducts}
-                        <div className={styles.quantityBox}>
-                            <button onClick={decreaseQuantity}>-</button>
-                            <input type='number' value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
-                            <button onClick={increaseQuantity}>+</button>
-                        </div>
-                        <button onClick={handleAddSale} className={styles.addButton}>Adicionar</button>
-                    </div>
-                    <h3>Venda</h3>
-                    <div className={styles.tableContainer}>
-                        <table className={styles.saleTable}>
-                            <thead className={styles.tableRowHeader}>
-                                <tr>
-                                    <th className={styles.tableHeader}>Código</th>
-                                    <th className={styles.tableHeader}>Descrição</th>
-                                    <th className={styles.tableHeader}>Quantidade</th>
-                                    <th className={styles.tableHeader}>Preço de venda</th>
-                                    <th className={styles.tableHeader}>Total</th>
-                                    <th className={styles.tableHeader}></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {
-                                todaySale.map((s, index) => {
-                                    return(
-                                        <tr key={index} className={styles.tableRowItems}>
-                                            <td className={styles.tableCell}>{s.code}</td>
-                                            <td className={styles.tableCell}>{s.description}</td>
-                                            <td className={styles.tableCell}>{s.quantity}</td>
-                                            <td className={styles.tableCell}>$ {s.salePrice}</td>
-                                            <td className={styles.tableCell}>$ {String(Number(s.quantity) * Number(s.salePrice.replace(',', '.'))).replace('.', ',')}</td>
-                                            <td className={styles.tableCell}><button className={styles.removeSale} onClick={() => removeItemOnce(todaySale, s)}><FiTrash color='#A1A1A1' /></button></td>
+                    <h2>Venda</h2>
+                    <div className={styles.salesContainer}>
+                        <Box title='Iniciar uma venda'>
+                            <div className={styles.boxContent}>
+                                <div className={styles.searchBox}>
+                                    <FiSearch color='#A1A1A1' />
+                                    <input type='text' value={filteredValue} onChange={e => setFilteredValue(e.target.value)} placeholder='Descrição do produto' />
+                                </div>
+                                {filteredValue.length > 2 && filteredProducts}
+                                <div className={styles.row}>
+                                    <div className={styles.quantityBox}>
+                                        <button onClick={decreaseQuantity}>-</button>
+                                        <input type='number' value={quantity} onChange={e => setQuantity(Number(e.target.value))} />
+                                        <button onClick={increaseQuantity}>+</button>
+                                    </div>
+                                    <button onClick={handleAddSale} className={styles.addButton}>Adicionar</button>
+                                </div>
+                                <span>Detalhes da venda</span>
+                                <table className={styles.saleTable}>
+                                    <thead className={styles.tableRowHeader}>
+                                        <tr>
+                                            <th className={styles.tableHeader}>Descrição</th>
+                                            <th className={styles.tableHeader}>Quantidade</th>
+                                            <th className={styles.tableHeader}>Total</th>
+                                            <th className={styles.tableHeader}></th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        todaySale.map((s, index) => {
+                                            return(
+                                                <tr key={index} className={styles.tableRowItems}>
+                                                    <td className={styles.tableCell}>{s.description}</td>
+                                                    <td className={styles.tableCell}>{s.quantity}</td>
+                                                    <td className={styles.tableCell}>{(Number(s.quantity) * Number(s.salePrice.replace('.', '').replace(',', '.'))).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                                                    <td className={styles.tableCell}><button className={styles.removeSale} onClick={() => removeItemOnce(todaySale, s)}><FiTrash color='#A1A1A1' /></button></td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
+                                    </tbody>
+                                </table>
+                                <hr />
+                                <span>Pagamento</span>
+                                <div className={styles.paymentRow}>
+                                    <button onClick={() => handleSelectPaymentMethod('credit')} className={`${styles.selectable} ${styles.paymentMethod} ${selectedMethod === 'credit' && styles.active}`}>
+                                        <FiCreditCard color='929292' />
+                                        Crédito
+                                    </button>
+                                    <button onClick={() => handleSelectPaymentMethod('debit')} className={`${styles.selectable} ${styles.paymentMethod} ${selectedMethod === 'debit' && styles.active}`}>
+                                        <FiCreditCard color='929292' />
+                                        Débito
+                                    </button>
+                                    <div className={`${styles.selectable} ${styles.paymentMethod} ${selectedMethod === 'cash' && styles.active}`}>
+                                        <FiDollarSign color='#A1A1A1' />
+                                        <input type='text' onClick={() => handleSelectPaymentMethod('cash')} value={cashAmount} onChange={e => setCashAmount(moneyMask(e.target.value))} placeholder='Dinheiro' />
+                                    </div>
+                                </div>
+                                <div className={styles.row}>
+                                    <div>
+                                        <span>Total</span>
+                                        <h2 className={styles.total}>{totalSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>
+                                    </div>
+                                    {
+                                        selectedMethod === 'cash' && 
+                                        <div>
+                                            <span>Troco</span>
+                                            <h2 className={styles.total}>{(Number(cashAmount.replace('.', '').replace(',', '.')) - totalSale).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>
+                                        </div>
+                                    }
+                                </div>
+                                <button className={styles.submitSale} onClick={handleCreateSale}>Receber e finalizar</button>
+                            </div>
+                        </Box>
+                        <Box title='Ultimas vendas'>
+                            {
+                                todaySales.slice(0, 4).map(sale => {
+                                    return(
+                                        <SaleItem key={sale.id} paymentMethod={sale.paymentMethod} description={sale.name} saleAmount={Number(sale.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} date={
+                                            new Date(sale.date).toLocaleDateString('pt-BR', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })
+                                        } />
                                     )
                                 })
                             }
-                            </tbody>
-                        </table>
+                        </Box>
                     </div>
-                    
-                    <h3>Total</h3>
-                    <h2>R$ {String(totalSale).replace('.', ',')}</h2>
-                    <button className={styles.submitSale} onClick={handleCreateSale}>Fechar venda</button>
                 </div>
             </main>
         </>

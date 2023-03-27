@@ -82,10 +82,11 @@ export default function MerchantId({session}) {
 
         setSale(String(calc).replace('.', ','))
         setMargin(value)
+        setSale(String(calc).replace('.', ','))
         return value
     }
 
-    const filteredProducts = firebaseProduct.filter(p => p.description.includes(filteredValue))
+    const filteredProducts = firebaseProduct.filter(p => p.description.toLowerCase().includes(filteredValue.toLowerCase()))
 
     const handleClearData = () => {
         setCategory('')

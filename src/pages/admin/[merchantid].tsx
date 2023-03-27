@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { ref, get, child } from 'firebase/database'
+import { FiDollarSign, FiArchive } from 'react-icons/fi'
 
 import { Header } from '../../components/Header'
 import { Navigator } from '../../components/Navigator'
@@ -12,6 +13,7 @@ import { database } from '../../services/firebase'
 import { MerchantData } from '../api/subscribe'
 
 import styles from './styles.module.scss'
+import Box from '../../components/Box'
 
 interface SaleType {
     name: string,
@@ -145,11 +147,65 @@ export default function MerchantId() {
 
             <main className={styles.container}>
                 <div className={styles.contentContainer}>
-                    <h2>Hoje</h2>
+                    <h2>Minhas estatísticas</h2>
+                    <br />
+                    <div className={styles.statisticsContainer}>
+                        <Box title='Hoje'>
+                            <div className={styles.boxContent}>
+                                <div className={styles.boxItem}>
+                                    <div>
+                                        <FiDollarSign color='#727E8A' />
+                                        <span>Volume bruto</span>
+                                    </div>
+                                    <div>
+                                        <h3>{totalSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h3>
+                                        <span>Ontem: </span>
+                                    </div>
+                                </div>
+                                <div className={styles.verticalLine}></div>
+                                <div className={styles.boxItem}>
+                                    <div>
+                                        <FiDollarSign color='#727E8A' />
+                                        <span>Volume líquido</span>
+                                    </div>
+                                    <div>
+                                        <h3>{totalSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h3>
+                                        <span>Ontem: </span>
+                                    </div>
+                                </div>
+                                <div className={styles.verticalLine}></div>
+                                <div className={styles.boxItem}>
+                                    <div>
+                                        <FiDollarSign color='#727E8A' />
+                                        <span>Total de vendas</span>
+                                    </div>
+                                    <div>
+                                        <h3>{todaySales.length}</h3>
+                                        <span>Ontem: </span>
+                                    </div>
+                                </div>
+                                <div className={styles.verticalLine}></div>
+                                <div className={styles.boxItem}>
+                                    <div>
+                                        <FiArchive color='#727E8A' />
+                                        <span>Estoque</span>
+                                    </div>
+                                    <div>
+                                        <h3>{firebaseProduct.length}</h3>
+                                        <span>Ontem: </span>
+                                    </div>
+                                </div>
+                                <div className={styles.verticalLine}></div>
+                                <div className={styles.boxItem}>
+                                    
+                                </div>
+                            </div>
+                        </Box>
+                    </div>
                     <div className={styles.box}>
                         <div>
                             <span>Volume bruto</span>
-                            <h2>R$ {Math.floor(totalSale).toString().replace('.', ',')}</h2>
+                            <h2>{totalSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h2>
                         </div>
                         <div>
                             <span>Vendas</span>
