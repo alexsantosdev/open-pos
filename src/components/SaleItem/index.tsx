@@ -16,7 +16,7 @@ export default function SaleItem({ paymentMethod, description, saleAmount, date 
                 <div className={styles.iconContainer}>
                     {paymentMethod === 'cash' ? <FiDollarSign color='#929292' /> : <FiCreditCard color='#929292' />}
                 </div>
-                <div className={styles.saleContent}>
+                <div className={styles.saleItemContent}>
                     <h2>{description}</h2>
                     <span>{paymentMethod === 'cash' ? 'Dinheiro' : paymentMethod === 'credit' ? 'Crédito' : 'Débito'}</span>
                 </div>

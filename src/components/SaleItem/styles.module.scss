@@ -40,7 +40,7 @@
     justify-content: center;
 }
 
-.saleContent {
+.saleItemContent {
     display: flex;
     flex-direction: column;
     
@@ -73,8 +73,8 @@
     gap: 12px;
 
     h3 {
-        margin: 0;
-        color: #248822;
+        margin: 0 !important;
+        color: #248822 !important;
     }
 
     span {
