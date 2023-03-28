@@ -269,7 +269,7 @@ export default function MerchantId() {
                                         <span>vs Ontem: <b>{yesterdayTotalSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'})}</b></span>
                                     </div>
                                 </div>
-                                <div className={styles.verticalLine}></div>
+                                <div className={`${styles.verticalLine} ${styles.hide}`}></div>
                                 <div className={`${styles.boxItem} ${styles.hide}`}>
                                     <div>
                                         <FiDollarSign color='#727E8A' />
