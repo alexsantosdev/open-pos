@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
 import { ref, get, child, update, set, remove } from 'firebase/database'
 import toast, { Toaster } from 'react-hot-toast'
-import { FiSearch } from 'react-icons/fi'
+import { FiSearch, FiCircle } from 'react-icons/fi'
 
 import { Header } from '../../../components/Header'
 import { Navigator } from '../../../components/Navigator'
@@ -18,7 +18,7 @@ import { MerchantData } from '../../api/subscribe'
 
 import { dateMask, moneyMask } from '../../../utils/itemMask'
 
-import styles from './styles.module.scss'
+import styles from './inventory.module.scss'
 
 interface Categories {
     name: string;
@@ -80,9 +80,9 @@ export default function MerchantId({session}) {
         let salePrice: number = (Number(cost.replace(',', '.')) * percentage)
         let calc: number = (Number(cost.replace(',', '.')) + salePrice)
 
-        setSale(String(calc).replace('.', ','))
+        setSale(calc.toFixed(2))
         setMargin(value)
-        setSale(String(calc).replace('.', ','))
+        setSale(calc.toFixed(2))
         return value
     }
 
@@ -531,19 +531,21 @@ export default function MerchantId({session}) {
             <main className={styles.container}>
                 <div className={styles.contentContainer}>
                     <h2>Controle de estoque</h2>
+                    <br />
                     <div className={styles.row}>
                         <div>
                             <button onClick={handleChangeProductModal}>+ Produto</button>
                             <button onClick={handleChangeCategoryModal}>+ Categoria</button>  
+                            <span>{firebaseCategory.length} Categorias / {firebaseProduct.length} Produtos</span>
                         </div>
                         <div>
                             <div className={styles.searchBox}>
                                 <FiSearch color='#A1A1A1' />
                                 <input type='text' value={filteredValue} onChange={e => setFilteredValue(e.target.value)} placeholder='Descrição do produto' />
                             </div>
-                            <span>{firebaseProduct.length} Produtos cadastrados.</span>
                         </div>
                     </div>
+                    <br />
                     <div className={styles.tableContainer}>
                         {/* <ProductTable
                             columns={[]}

@@ -31,7 +31,7 @@
     width: 100%;
     height: max-content;
 
-    gap: 2rem;
+    gap: 1rem;
 
     .boxContent {
         width: 100%;
@@ -269,6 +269,15 @@
         filter: brightness(0.8);
         transition: filter .2s;
     }
+}
+
+.empty {
+    color: #696781;
+    font-size: 18px;
+
+    align-self: center;
+
+    margin: 4rem 0;
 }
 
 @media (max-width: 720px) {

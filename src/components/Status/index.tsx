@@ -31,5 +31,6 @@ const StatusContainer = styled.div<StatusContainerProps>`
     span {
         font-size: 12px;
         font-weight: 600;
+        color: ${(props) => props.alert === true ? '#76392F' : '#0F953A'};
     }
 `

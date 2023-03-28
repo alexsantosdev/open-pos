@@ -10,6 +10,7 @@ import { FiCreditCard, FiDollarSign, FiSearch, FiTrash } from 'react-icons/fi'
 import { Header } from '../../../components/Header'
 import { Navigator } from '../../../components/Navigator'
 import Box from '../../../components/Box'
+import SaleItem from '../../../components/SaleItem'
 
 import { database } from '../../../services/firebase'
 
@@ -17,8 +18,7 @@ import { moneyMask } from '../../../utils/itemMask'
 
 import { MerchantData } from '../../api/subscribe'
 
-import styles from './styles.module.scss'
-import SaleItem from '../../../components/SaleItem'
+import styles from './sale.module.scss'
 
 interface Products {
     code: string;
@@ -48,6 +48,8 @@ interface SaleType {
     id: string,
     name: string,
     quantity: string,
+    cost: string,
+    margin: string,
     total: string,
     date: string,
     paymentMethod: string,
@@ -76,6 +78,7 @@ export default function MerchantId({ session }) {
             setQuantity(quantity + 1)
         }
     }
+
     const decreaseQuantity = () => (quantity !== 0) && setQuantity(quantity - 1)
 
     const handleSelectProduct = (code: string) => {
@@ -152,16 +155,16 @@ export default function MerchantId({ session }) {
         }
 
         if(quantity === 0) {
-            return toast.error('Informe a quantidade.', {
+            return toast.error('Informe uma quantidade mínima', {
                 style: {
-                  border: '1px solid var(--purple-500)',
+                  border: '1px solid #AF9C6A',
                   padding: '16px',
-                  color: '#5D3FB2',
-                  background: '#f6f6f6'
+                  color: '#BB9D58',
+                  background: '#FFFBEC'
                 },
                 iconTheme: {
-                  primary: '#5D3FB2',
-                  secondary: '#FFFFFF',
+                  primary: '#FDEFC8',
+                  secondary: '#BB9D58',
                 },
             })
         }
@@ -206,9 +209,11 @@ export default function MerchantId({ session }) {
                 inventory: Number(s.inventory) - Number(s.quantity)
             })
 
-            await set(ref(database, `merchant/${session?.merchant_id}/sales/` + new Date().toJSON().toString().replace('.', '')), {
+            await push(ref(database, `merchant/${session?.merchant_id}/sales/`), {
                 name: s.description,
                 quantity: s.quantity,
+                cost: s.cost,
+                margin: s.margin,
                 total: (Number(s.salePrice.replace(',', '.')) * Number(s.quantity)).toString(),
                 date: new Date().toJSON().toString(),
                 paymentMethod: selectedMethod,
@@ -224,14 +229,14 @@ export default function MerchantId({ session }) {
 
         return toast.success('Venda cadastrada com sucesso!', {
             style: {
-                border: '1px solid var(--purple-500)',
+                border: '1px solid #457E6F',
                 padding: '16px',
-                color: '#5D3FB2',
-                background: '#f6f6f6'
+                color: '#316C5B',
+                background: '#F0FCF6'
             },
             iconTheme: {
-                primary: '#5D3FB2',
-                secondary: '#FFFFFF',
+                primary: '#C7F8E3',
+                secondary: '#316C5B',
             },
         })
     }
@@ -246,6 +251,8 @@ export default function MerchantId({ session }) {
                         id: key,
                         name: value.name,
                         quantity: value.quantity,
+                        cost: value.cost,
+                        margin: value.margin,
                         total: value.total,
                         date: value.date,
                         paymentMethod: value.paymentMethod,
@@ -253,12 +260,14 @@ export default function MerchantId({ session }) {
                     }
                 })
 
+                console.log('Updated value >>', parsedData)
+
                 let todayDate = new Date()
                 const offset = todayDate.getTimezoneOffset()
                 todayDate = new Date(todayDate.getTime() - (offset*60*1000))
                 let todayDateToString = todayDate.toISOString().split('T')[0].toString()
 
-                let todaySale: SaleType[] = parsedData.filter(d => d.id.includes(todayDateToString))
+                let todaySale: SaleType[] = parsedData.filter(d => d.date.includes(todayDateToString))
 
                 setTodaySales(todaySale.reverse())
             }else {
@@ -361,7 +370,7 @@ export default function MerchantId({ session }) {
                                                 <tr key={index} className={styles.tableRowItems}>
                                                     <td className={styles.tableCell}>{s.description}</td>
                                                     <td className={styles.tableCell}>{s.quantity}</td>
-                                                    <td className={styles.tableCell}>{(Number(s.quantity) * Number(s.salePrice.replace('.', '').replace(',', '.'))).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                                                    <td className={styles.tableCell}>{(Number(s.quantity) * Number(s.salePrice.replace(',', '.'))).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                                                     <td className={styles.tableCell}><button className={styles.removeSale} onClick={() => removeItemOnce(todaySale, s)}><FiTrash color='#A1A1A1' /></button></td>
                                                 </tr>
                                             )
@@ -403,19 +412,19 @@ export default function MerchantId({ session }) {
                         </Box>
                         <Box title='Ultimas vendas'>
                             {
+                                todaySales.length > 0 ?
                                 todaySales.slice(0, 4).map(sale => {
                                     return(
                                         <SaleItem key={sale.id} paymentMethod={sale.paymentMethod} description={sale.name} saleAmount={Number(sale.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} date={
                                             new Date(sale.date).toLocaleDateString('pt-BR', {
                                                 day: '2-digit',
                                                 month: '2-digit',
-                                                year: 'numeric',
                                                 hour: '2-digit',
                                                 minute: '2-digit'
                                             })
                                         } />
                                     )
-                                })
+                                }) : <span className={styles.empty}>Nenhuma venda registrada.</span>
                             }
                         </Box>
                     </div>

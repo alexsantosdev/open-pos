@@ -50,11 +50,11 @@ export function Table({data, rowsPerPage, handleDeleteItem, handleEditItem }: Ta
                                 <td className={styles.tableCell}>{el.description}</td>
                                 <td className={styles.tableCell}>{el.inventory}</td>
                                 <td className={styles.tableCell}>{el.validity}</td>
-                                <td className={styles.tableCell}>$ {el.cost}</td>
-                                <td className={styles.tableCell}>$ {el.salePrice}</td>
+                                <td className={styles.tableCell}>{Number(String(el.cost).replace(',', '.')).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                                <td className={styles.tableCell}>{Number(String(el.salePrice).replace(',', '.')).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                                 <td className={styles.tableCell}>{el.margin}%</td>
                                 <td className={styles.tableCell}>
-                                    <Status alert={Number(el.inventory) < 10} text={Number(el.inventory) < 10 ? 'Abastecer' : 'OK'} />
+                                    <Status alert={Number(el.inventory) < 10} text={Number(el.inventory) < 10 ? 'Baixo' : 'OK'} />
                                 </td>
                                 <td className={styles.tableCell}>{el.category}</td>
                                 <td className={styles.tableCell}>

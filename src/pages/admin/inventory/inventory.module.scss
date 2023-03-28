@@ -1,5 +1,5 @@
 .container {
-    background: var(--white);
+    background: var(--white-100);
 
     height: calc(100vh - 10rem);
 }
@@ -15,12 +15,15 @@
 }
 
 .row {
-    margin: 1rem 0;
+    background: var(--white);
     display: flex;
     flex-direction: row;
 
     align-items: center;
     justify-content: space-between;
+
+    padding: 12px;
+    border-radius: 5px;
 
     div {
         display: flex;
@@ -32,15 +35,15 @@
         button {
             border: none;
     
-            background: var(--purple-500);
-            color: var(--white);
+            background: #EEECFC;
+            color: var(--purple-500);
             padding: 7px 22px;
     
             border-radius: 3px;
     
             &:hover {
-                filter: brightness(0.7);
                 transition: filter .2s;
+                filter: brightness(0.9);
             }
         }
 
@@ -50,7 +53,8 @@
 
             gap: 8px;
 
-            border: 1px solid #B9B9B9;
+            border: 1px solid #F5F5F5;
+            background: #F7F7F7;
             padding: 7px 12px;
             border-radius: 5px;
 

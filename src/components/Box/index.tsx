@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import styles from './styles.module.scss'
+import styles from './box.module.scss'
 
 interface BoxProps {
     hasButton?: boolean,

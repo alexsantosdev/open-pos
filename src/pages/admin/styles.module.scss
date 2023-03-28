@@ -47,7 +47,7 @@
             align-items: flex-start;
 
             h3 {
-                font-size: 22px;
+                font-size: 24px;
                 font-weight: 700;
             }
 
@@ -56,6 +56,46 @@
             }
         }
     }
+
+    button {
+        border: none;
+        background: var(--purple-500);
+
+        display: flex;
+        flex-direction: row;
+
+        gap: 8px;
+        align-items: center;
+
+        padding: 7px 12px;
+        border: 1px solid #EAEBEF;
+        border-radius: 5px;
+
+        span {
+            color: var(--white);
+        }
+
+        &:hover {
+            transition: filter .2s;
+            filter: brightness(0.9);
+        }
+
+        & + button {
+            background: #FDFDFD;
+
+            span {
+                color: #515357;
+            }
+        }
+    }
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+
+    gap: 12px;
+    align-items: center;
 }
 
 .verticalLine {
@@ -94,4 +134,25 @@
             font-size: 26px;
         }
     }
+}
+
+.rowPanel {
+    margin-top: 1rem;
+    
+    display: flex;
+    flex-direction: row;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 1rem;
+}
+
+.empty {
+    color: #696781;
+    font-size: 18px;
+
+    align-self: center;
+
+    margin: 4rem 0;
 }
