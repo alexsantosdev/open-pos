@@ -283,30 +283,17 @@
 @media (max-width: 720px) {
     .container {
         .contentContainer {
-            .saleContainer {
-                width: 100%;
-                max-width: 100%;
-                .searchBox {
-                    height: 50px;
+            .salesContainer {
+                flex-direction: column;
 
-                    align-items: center;
+                .boxContent {
+                    .paymentRow {
+                        flex-direction: column;
 
-                    input {
-                        height: 100%;
+                        .cashMethod {
+                            justify-content: flex-start;
+                        }
                     }
-                }
-                .quantityBox {
-                    button {
-                        height: 50px;
-                    }
-
-                    input[type=number] {
-                        height: 50px;
-                    }
-                }
-
-                button {
-                    height: 50px;
                 }
             }
             

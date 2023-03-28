@@ -270,7 +270,7 @@ export default function MerchantId() {
                                     </div>
                                 </div>
                                 <div className={styles.verticalLine}></div>
-                                <div className={styles.boxItem}>
+                                <div className={`${styles.boxItem} ${styles.hide}`}>
                                     <div>
                                         <FiDollarSign color='#727E8A' />
                                         <span>Volume líquido</span>
@@ -283,8 +283,8 @@ export default function MerchantId() {
                                         <span>vs Ontem: <b>{yesterdayLiquidSale.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'})}</b></span>
                                     </div>
                                 </div>
-                                <div className={styles.verticalLine}></div>
-                                <div className={styles.boxItem}>
+                                <div className={`${styles.verticalLine} ${styles.hide}`}></div>
+                                <div className={`${styles.boxItem} ${styles.hide}`}>
                                     <div>
                                         <FiDollarSign color='#727E8A' />
                                         <span>Total de vendas</span>
@@ -297,8 +297,8 @@ export default function MerchantId() {
                                         <span>vs Ontem: <b>{yesterdaySales.length}</b></span>
                                     </div>
                                 </div>
-                                <div className={styles.verticalLine}></div>
-                                <div className={styles.boxItem}>
+                                <div className={`${styles.verticalLine} ${styles.hide}`}></div>
+                                <div className={`${styles.boxItem} ${styles.hide}`}>
                                     <div>
                                         <FiArchive color='#727E8A' />
                                         <span>Estoque</span>
@@ -308,7 +308,7 @@ export default function MerchantId() {
                                         <span>Categorias: <b>{categories.length}</b></span>
                                     </div>
                                 </div>
-                                <div className={styles.verticalLine}></div>
+                                <div className={`${styles.verticalLine} ${styles.hide}`}></div>
                                 <div className={styles.boxItem}>
                                     <button>
                                         <FiInbox color='#F6F6F6' />

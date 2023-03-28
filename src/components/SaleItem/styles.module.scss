@@ -83,3 +83,14 @@
         color: #717382;
     }
 }
+@media (max-width: 720px) {
+    .iconContainer {
+        display: none;
+    }
+    
+    .saleItemContent {
+        h2 {
+            font-size: 14px;
+        }
+    }
+}

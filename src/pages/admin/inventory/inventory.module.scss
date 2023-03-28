@@ -156,12 +156,8 @@
         text-align: left;
         padding: 8px;
     }
-      
-    // tr:nth-child(even) {
-    // background-color: #dddddd;
-    // }
 
-      tr {
+    tr {
         td {
             color: var(--gray-800);
             font-size: 14px;
@@ -173,7 +169,7 @@
         & + tr {
             border-top: 1px solid #E8E8E8;
         }
-      }
+    }
 }
 
 @media (max-width: 720px) {
@@ -187,7 +183,7 @@
 
                 div {
                     width: 100%;
-                    flex-direction: row;
+                    flex-direction: column;
 
                     button {
                         width: 100%;
@@ -201,9 +197,9 @@
 
                     &:last-child {
                         margin-top: 1rem;
-                        flex-direction: column;
+                        flex-direction: row;
 
-                        align-items: start;
+                        align-items: center;
                     }
                 }
             }

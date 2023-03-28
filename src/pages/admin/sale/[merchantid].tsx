@@ -389,7 +389,7 @@ export default function MerchantId({ session }) {
                                         <FiCreditCard color='929292' />
                                         Débito
                                     </button>
-                                    <div className={`${styles.selectable} ${styles.paymentMethod} ${selectedMethod === 'cash' && styles.active}`}>
+                                    <div className={`${styles.selectable} ${styles.paymentMethod} ${styles.cashMethod} ${selectedMethod === 'cash' && styles.active}`}>
                                         <FiDollarSign color='#A1A1A1' />
                                         <input type='text' onClick={() => handleSelectPaymentMethod('cash')} value={cashAmount} onChange={e => setCashAmount(moneyMask(e.target.value))} placeholder='Dinheiro' />
                                     </div>

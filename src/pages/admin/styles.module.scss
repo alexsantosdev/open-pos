@@ -156,3 +156,13 @@
 
     margin: 4rem 0;
 }
+
+@media (max-width: 720px) {
+    .hide {
+        display: none;
+    }
+
+    .rowPanel {
+        flex-direction: column;
+    }
+}
